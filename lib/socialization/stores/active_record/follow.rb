@@ -1,62 +1,62 @@
 module Socialization
   module ActiveRecordStores
-    class Follow < ActiveRecord::Base
+    class Creep < ActiveRecord::Base
       extend Socialization::Stores::Mixins::Base
-      extend Socialization::Stores::Mixins::Follow
+      extend Socialization::Stores::Mixins::Creep
       extend Socialization::ActiveRecordStores::Mixins::Base
 
-      belongs_to :follower,   :polymorphic => true
-      belongs_to :followable, :polymorphic => true
+      belongs_to :creeper,   :polymorphic => true
+      belongs_to :creepable, :polymorphic => true
 
-      scope :followed_by, lambda { |follower| where(
-        :follower_type   => follower.class.table_name.classify,
-        :follower_id     => follower.id)
+      scope :creeped_by, lambda { |creeper| where(
+        :creeper_type   => creeper.class.table_name.classify,
+        :creeper_id     => creeper.id)
       }
 
-      scope :following,   lambda { |followable| where(
-        :followable_type => followable.class.table_name.classify,
-        :followable_id   => followable.id)
+      scope :creeping,   lambda { |creepable| where(
+        :creepable_type => creepable.class.table_name.classify,
+        :creepable_id   => creepable.id)
       }
 
       class << self
-        def follow!(follower, followable)
-          unless follows?(follower, followable)
-            self.create! do |follow|
-              follow.follower = follower
-              follow.followable = followable
+        def creep!(creeper, creepable)
+          unless creeps?(creeper, creepable)
+            self.create! do |creep|
+              creep.creeper = creeper
+              creep.creepable = creepable
             end
-            update_counter(follower, followees_count: +1)
-            update_counter(followable, followers_count: +1)
-            call_after_create_hooks(follower, followable)
+            update_counter(creeper, creepees_count: +1)
+            update_counter(creepable, creepers_count: +1)
+            call_after_create_hooks(creeper, creepable)
             true
           else
             false
           end
         end
 
-        def unfollow!(follower, followable)
-          if follows?(follower, followable)
-            follow_for(follower, followable).destroy_all
-            update_counter(follower, followees_count: -1)
-            update_counter(followable, followers_count: -1)
-            call_after_destroy_hooks(follower, followable)
+        def uncreep!(creeper, creepable)
+          if creeps?(creeper, creepable)
+            creep_for(creeper, creepable).destroy_all
+            update_counter(creeper, creepees_count: -1)
+            update_counter(creepable, creepers_count: -1)
+            call_after_destroy_hooks(creeper, creepable)
             true
           else
             false
           end
         end
 
-        def follows?(follower, followable)
-          !follow_for(follower, followable).empty?
+        def creeps?(creeper, creepable)
+          !creep_for(creeper, creepable).empty?
         end
 
-        # Returns an ActiveRecord::Relation of all the followers of a certain type that are following followable
-        def followers_relation(followable, klass, opts = {})
+        # Returns an ActiveRecord::Relation of all the creepers of a certain type that are creeping creepable
+        def creepers_relation(creepable, klass, opts = {})
           rel = klass.where(:id =>
-            self.select(:follower_id).
-              where(:follower_type => klass.table_name.classify).
-              where(:followable_type => followable.class.to_s).
-              where(:followable_id => followable.id)
+            self.select(:creeper_id).
+              where(:creeper_type => klass.table_name.classify).
+              where(:creepable_type => creepable.class.to_s).
+              where(:creepable_id => creepable.id)
           )
 
           if opts[:pluck]
@@ -66,9 +66,9 @@ module Socialization
           end
         end
 
-        # Returns all the followers of a certain type that are following followable
-        def followers(followable, klass, opts = {})
-          rel = followers_relation(followable, klass, opts)
+        # Returns all the creepers of a certain type that are creeping creepable
+        def creepers(creepable, klass, opts = {})
+          rel = creepers_relation(creepable, klass, opts)
           if rel.is_a?(ActiveRecord::Relation)
             rel.to_a
           else
@@ -76,13 +76,13 @@ module Socialization
           end
         end
 
-        # Returns an ActiveRecord::Relation of all the followables of a certain type that are followed by follower
-        def followables_relation(follower, klass, opts = {})
+        # Returns an ActiveRecord::Relation of all the creepables of a certain type that are creeped by creeper
+        def creepables_relation(creeper, klass, opts = {})
           rel = klass.where(:id =>
-            self.select(:followable_id).
-              where(:followable_type => klass.table_name.classify).
-              where(:follower_type => follower.class.to_s).
-              where(:follower_id => follower.id)
+            self.select(:creepable_id).
+              where(:creepable_type => klass.table_name.classify).
+              where(:creeper_type => creeper.class.to_s).
+              where(:creeper_id => creeper.id)
           )
 
           if opts[:pluck]
@@ -92,9 +92,9 @@ module Socialization
           end
         end
 
-        # Returns all the followables of a certain type that are followed by follower
-        def followables(follower, klass, opts = {})
-          rel = followables_relation(follower, klass, opts)
+        # Returns all the creepables of a certain type that are creeped by creeper
+        def creepables(creeper, klass, opts = {})
+          rel = creepables_relation(creeper, klass, opts)
           if rel.is_a?(ActiveRecord::Relation)
             rel.to_a
           else
@@ -102,21 +102,21 @@ module Socialization
           end
         end
 
-        # Remove all the followers for followable
-        def remove_followers(followable)
-          self.where(:followable_type => followable.class.name.classify).
-               where(:followable_id => followable.id).destroy_all
+        # Remove all the creepers for creepable
+        def remove_creepers(creepable)
+          self.where(:creepable_type => creepable.class.name.classify).
+               where(:creepable_id => creepable.id).destroy_all
         end
 
-        # Remove all the followables for follower
-        def remove_followables(follower)
-          self.where(:follower_type => follower.class.name.classify).
-               where(:follower_id => follower.id).destroy_all
+        # Remove all the creepables for creeper
+        def remove_creepables(creeper)
+          self.where(:creeper_type => creeper.class.name.classify).
+               where(:creeper_id => creeper.id).destroy_all
         end
 
       private
-        def follow_for(follower, followable)
-          followed_by(follower).following(followable)
+        def creep_for(creeper, creepable)
+          creeped_by(creeper).creeping(creepable)
         end
       end # class << self
 

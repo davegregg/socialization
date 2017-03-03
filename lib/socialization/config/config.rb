@@ -1,15 +1,15 @@
 module Socialization
   class << self
-    def follow_model
-      if @follow_model
-        @follow_model
+    def creep_model
+      if @creep_model
+        @creep_model
       else
-        ::Follow
+        ::Creep
       end
     end
 
-    def follow_model=(klass)
-      @follow_model = klass
+    def creep_model=(klass)
+      @creep_model = klass
     end
 
     def like_model

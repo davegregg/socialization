@@ -5,14 +5,14 @@ module Socialization
     extend ActiveSupport::Concern
 
     module ClassMethods
-      # Make the current class a {Socialization::Follower}
-      def acts_as_follower(opts = {})
-        include Socialization::Follower
+      # Make the current class a {Socialization::Creeper}
+      def acts_as_creeper(opts = {})
+        include Socialization::Creeper
       end
 
-      # Make the current class a {Socialization::Followable}
-      def acts_as_followable(opts = {})
-        include Socialization::Followable
+      # Make the current class a {Socialization::Creepable}
+      def acts_as_creepable(opts = {})
+        include Socialization::Creepable
       end
 
       # Make the current class a {Socialization::Liker}

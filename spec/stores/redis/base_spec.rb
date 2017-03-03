@@ -1,183 +1,183 @@
 require 'spec_helper'
 
 describe Socialization::RedisStores::Base do
-  # Testing through RedisStores::Follow for easy testing
+  # Testing through RedisStores::Creep for easy testing
   before(:each) do
     use_redis_store
-    @klass = Socialization::RedisStores::Follow
+    @klass = Socialization::RedisStores::Creep
     @klass.touch nil
-    @klass.after_follow nil
-    @klass.after_unfollow nil
-    @follower1 = ImAFollower.create
-    @follower2 = ImAFollower.create
-    @followable1 = ImAFollowable.create
-    @followable2 = ImAFollowable.create
+    @klass.after_creep nil
+    @klass.after_uncreep nil
+    @creeper1 = ImACreeper.create
+    @creeper2 = ImACreeper.create
+    @creepable1 = ImACreepable.create
+    @creepable2 = ImACreepable.create
   end
 
-  describe "RedisStores::Base through RedisStores::Follow" do
+  describe "RedisStores::Base through RedisStores::Creep" do
     describe "Stores" do
-      it "inherits Socialization::RedisStores::Follow" do
-        expect(Socialization.follow_model).to eq(Socialization::RedisStores::Follow)
+      it "inherits Socialization::RedisStores::Creep" do
+        expect(Socialization.creep_model).to eq(Socialization::RedisStores::Creep)
       end
     end
 
-    describe "#follow!" do
-      it "creates follow records" do
-        @klass.follow!(@follower1, @followable1)
-        expect(Socialization.redis.smembers(forward_key(@followable1))).to match_array ["#{@follower1.class}:#{@follower1.id}"]
-        expect(Socialization.redis.smembers(backward_key(@follower1))).to match_array ["#{@followable1.class}:#{@followable1.id}"]
+    describe "#creep!" do
+      it "creates creep records" do
+        @klass.creep!(@creeper1, @creepable1)
+        expect(Socialization.redis.smembers(forward_key(@creepable1))).to match_array ["#{@creeper1.class}:#{@creeper1.id}"]
+        expect(Socialization.redis.smembers(backward_key(@creeper1))).to match_array ["#{@creepable1.class}:#{@creepable1.id}"]
 
-        @klass.follow!(@follower2, @followable1)
-        expect(Socialization.redis.smembers(forward_key(@followable1))).to match_array ["#{@follower1.class}:#{@follower1.id}", "#{@follower2.class}:#{@follower2.id}"]
-        expect(Socialization.redis.smembers(backward_key(@follower1))).to match_array ["#{@followable1.class}:#{@followable1.id}"]
-        expect(Socialization.redis.smembers(backward_key(@follower2))).to match_array ["#{@followable1.class}:#{@followable1.id}"]
+        @klass.creep!(@creeper2, @creepable1)
+        expect(Socialization.redis.smembers(forward_key(@creepable1))).to match_array ["#{@creeper1.class}:#{@creeper1.id}", "#{@creeper2.class}:#{@creeper2.id}"]
+        expect(Socialization.redis.smembers(backward_key(@creeper1))).to match_array ["#{@creepable1.class}:#{@creepable1.id}"]
+        expect(Socialization.redis.smembers(backward_key(@creeper2))).to match_array ["#{@creepable1.class}:#{@creepable1.id}"]
       end
 
-      it "touches follower when instructed" do
-        @klass.touch :follower
-        expect(@follower1).to receive(:touch).once
-        expect(@followable1).to receive(:touch).never
-        @klass.follow!(@follower1, @followable1)
+      it "touches creeper when instructed" do
+        @klass.touch :creeper
+        expect(@creeper1).to receive(:touch).once
+        expect(@creepable1).to receive(:touch).never
+        @klass.creep!(@creeper1, @creepable1)
       end
 
-      it "touches followable when instructed" do
-        @klass.touch :followable
-        expect(@follower1).to receive(:touch).never
-        expect(@followable1).to receive(:touch).once
-        @klass.follow!(@follower1, @followable1)
+      it "touches creepable when instructed" do
+        @klass.touch :creepable
+        expect(@creeper1).to receive(:touch).never
+        expect(@creepable1).to receive(:touch).once
+        @klass.creep!(@creeper1, @creepable1)
       end
 
       it "touches all when instructed" do
         @klass.touch :all
-        expect(@follower1).to receive(:touch).once
-        expect(@followable1).to receive(:touch).once
-        @klass.follow!(@follower1, @followable1)
+        expect(@creeper1).to receive(:touch).once
+        expect(@creepable1).to receive(:touch).once
+        @klass.creep!(@creeper1, @creepable1)
       end
 
-      it "calls after follow hook" do
-        @klass.after_follow :after_follow
-        expect(@klass).to receive(:after_follow).once
-        @klass.follow!(@follower1, @followable1)
+      it "calls after creep hook" do
+        @klass.after_creep :after_creep
+        expect(@klass).to receive(:after_creep).once
+        @klass.creep!(@creeper1, @creepable1)
       end
 
-      it "calls after unfollow hook" do
-        @klass.after_follow :after_unfollow
-        expect(@klass).to receive(:after_unfollow).once
-        @klass.follow!(@follower1, @followable1)
+      it "calls after uncreep hook" do
+        @klass.after_creep :after_uncreep
+        expect(@klass).to receive(:after_uncreep).once
+        @klass.creep!(@creeper1, @creepable1)
       end
     end
 
-    describe "#unfollow!" do
+    describe "#uncreep!" do
       before(:each) do
-        @klass.follow!(@follower1, @followable1)
+        @klass.creep!(@creeper1, @creepable1)
       end
 
-      it "removes follow records" do
-        @klass.unfollow!(@follower1, @followable1)
-        expect(Socialization.redis.smembers(forward_key(@followable1))).to be_empty
-        expect(Socialization.redis.smembers(backward_key(@follower1))).to be_empty
-      end
-    end
-
-    describe "#follows?" do
-      it "returns true when follow exists" do
-        @klass.follow!(@follower1, @followable1)
-        expect(@klass.follows?(@follower1, @followable1)).to be true
-      end
-
-      it "returns false when follow doesn't exist" do
-        expect(@klass.follows?(@follower1, @followable1)).to be false
+      it "removes creep records" do
+        @klass.uncreep!(@creeper1, @creepable1)
+        expect(Socialization.redis.smembers(forward_key(@creepable1))).to be_empty
+        expect(Socialization.redis.smembers(backward_key(@creeper1))).to be_empty
       end
     end
 
-    describe "#followers" do
-      it "returns an array of followers" do
-        follower1 = ImAFollower.create
-        follower2 = ImAFollower.create
-        follower1.follow!(@followable1)
-        follower2.follow!(@followable1)
-        expect(@klass.followers(@followable1, follower1.class)).to match_array [follower1, follower2]
+    describe "#creeps?" do
+      it "returns true when creep exists" do
+        @klass.creep!(@creeper1, @creepable1)
+        expect(@klass.creeps?(@creeper1, @creepable1)).to be true
       end
 
-      it "returns an array of follower ids when plucking" do
-        follower1 = ImAFollower.create
-        follower2 = ImAFollower.create
-        follower1.follow!(@followable1)
-        follower2.follow!(@followable1)
-        expect(@klass.followers(@followable1, follower1.class, :pluck => :id)).to match_array ["#{follower1.id}", "#{follower2.id}"]
+      it "returns false when creep doesn't exist" do
+        expect(@klass.creeps?(@creeper1, @creepable1)).to be false
       end
     end
 
-    describe "#followables" do
-      it "returns an array of followables" do
-        followable1 = ImAFollowable.create
-        followable2 = ImAFollowable.create
-        @follower1.follow!(followable1)
-        @follower1.follow!(followable2)
-
-        expect(@klass.followables(@follower1, followable1.class)).to match_array [followable1, followable2]
+    describe "#creepers" do
+      it "returns an array of creepers" do
+        creeper1 = ImACreeper.create
+        creeper2 = ImACreeper.create
+        creeper1.creep!(@creepable1)
+        creeper2.creep!(@creepable1)
+        expect(@klass.creepers(@creepable1, creeper1.class)).to match_array [creeper1, creeper2]
       end
 
-      it "returns an array of followables ids when plucking" do
-        followable1 = ImAFollowable.create
-        followable2 = ImAFollowable.create
-        @follower1.follow!(followable1)
-        @follower1.follow!(followable2)
-        expect(@klass.followables(@follower1, followable1.class, :pluck => :id)).to match_array ["#{followable1.id}", "#{followable2.id}"]
+      it "returns an array of creeper ids when plucking" do
+        creeper1 = ImACreeper.create
+        creeper2 = ImACreeper.create
+        creeper1.creep!(@creepable1)
+        creeper2.creep!(@creepable1)
+        expect(@klass.creepers(@creepable1, creeper1.class, :pluck => :id)).to match_array ["#{creeper1.id}", "#{creeper2.id}"]
+      end
+    end
+
+    describe "#creepables" do
+      it "returns an array of creepables" do
+        creepable1 = ImACreepable.create
+        creepable2 = ImACreepable.create
+        @creeper1.creep!(creepable1)
+        @creeper1.creep!(creepable2)
+
+        expect(@klass.creepables(@creeper1, creepable1.class)).to match_array [creepable1, creepable2]
+      end
+
+      it "returns an array of creepables ids when plucking" do
+        creepable1 = ImACreepable.create
+        creepable2 = ImACreepable.create
+        @creeper1.creep!(creepable1)
+        @creeper1.creep!(creepable2)
+        expect(@klass.creepables(@creeper1, creepable1.class, :pluck => :id)).to match_array ["#{creepable1.id}", "#{creepable2.id}"]
       end
     end
 
     describe "#generate_forward_key" do
       it "returns valid key when passed an object" do
-        expect(forward_key(@followable1)).to eq("Followers:#{@followable1.class.name}:#{@followable1.id}")
+        expect(forward_key(@creepable1)).to eq("Creepers:#{@creepable1.class.name}:#{@creepable1.id}")
       end
 
       it "returns valid key when passed a String" do
-        expect(forward_key("Followable:1")).to eq("Followers:Followable:1")
+        expect(forward_key("Creepable:1")).to eq("Creepers:Creepable:1")
       end
     end
 
     describe "#generate_backward_key" do
       it "returns valid key when passed an object" do
-        expect(backward_key(@follower1)).to eq("Followables:#{@follower1.class.name}:#{@follower1.id}")
+        expect(backward_key(@creeper1)).to eq("Creepables:#{@creeper1.class.name}:#{@creeper1.id}")
       end
 
       it "returns valid key when passed a String" do
-        expect(backward_key("Follower:1")).to eq("Followables:Follower:1")
+        expect(backward_key("Creeper:1")).to eq("Creepables:Creeper:1")
       end
     end
 
-    describe "#remove_followers" do
-      it "deletes all followers relationships for a followable" do
-        @follower1.follow!(@followable1)
-        @follower2.follow!(@followable1)
-        expect(@followable1.followers(@follower1.class).count).to eq(2)
+    describe "#remove_creepers" do
+      it "deletes all creepers relationships for a creepable" do
+        @creeper1.creep!(@creepable1)
+        @creeper2.creep!(@creepable1)
+        expect(@creepable1.creepers(@creeper1.class).count).to eq(2)
 
-        @klass.remove_followers(@followable1)
-        expect(@followable1.followers(@follower1.class).count).to eq(0)
-        expect(Socialization.redis.smembers(forward_key(@followable1))).to be_empty
-        expect(Socialization.redis.smembers(backward_key(@follower1))).to be_empty
-        expect(Socialization.redis.smembers(backward_key(@follower2))).to be_empty
+        @klass.remove_creepers(@creepable1)
+        expect(@creepable1.creepers(@creeper1.class).count).to eq(0)
+        expect(Socialization.redis.smembers(forward_key(@creepable1))).to be_empty
+        expect(Socialization.redis.smembers(backward_key(@creeper1))).to be_empty
+        expect(Socialization.redis.smembers(backward_key(@creeper2))).to be_empty
       end
     end
 
-    describe "#remove_followables" do
-      it "deletes all followables relationships for a follower" do
-        @follower1.follow!(@followable1)
-        @follower1.follow!(@followable2)
-        expect(@follower1.followables(@followable1.class).count).to eq(2)
+    describe "#remove_creepables" do
+      it "deletes all creepables relationships for a creeper" do
+        @creeper1.creep!(@creepable1)
+        @creeper1.creep!(@creepable2)
+        expect(@creeper1.creepables(@creepable1.class).count).to eq(2)
 
-        @klass.remove_followables(@follower1)
-        expect(@follower1.followables(@followable1.class).count).to eq(0)
-        expect(Socialization.redis.smembers backward_key(@followable1)).to be_empty
-        expect(Socialization.redis.smembers backward_key(@follower2)).to be_empty
-        expect(Socialization.redis.smembers forward_key(@follower1)).to be_empty
+        @klass.remove_creepables(@creeper1)
+        expect(@creeper1.creepables(@creepable1.class).count).to eq(0)
+        expect(Socialization.redis.smembers backward_key(@creepable1)).to be_empty
+        expect(Socialization.redis.smembers backward_key(@creeper2)).to be_empty
+        expect(Socialization.redis.smembers forward_key(@creeper1)).to be_empty
       end
     end
 
     describe "#key_type_to_type_names" do
       it "returns the proper arrays" do
-        expect(@klass.send(:key_type_to_type_names, Socialization::RedisStores::Follow)).to eq(['follower', 'followable'])
+        expect(@klass.send(:key_type_to_type_names, Socialization::RedisStores::Creep)).to eq(['creeper', 'creepable'])
         expect(@klass.send(:key_type_to_type_names, Socialization::RedisStores::Mention)).to eq(['mentioner', 'mentionable'])
         expect(@klass.send(:key_type_to_type_names, Socialization::RedisStores::Like)).to eq(['liker', 'likeable'])
       end
@@ -185,11 +185,11 @@ describe Socialization::RedisStores::Base do
   end
 
   # Helpers
-  def forward_key(followable)
-    Socialization::RedisStores::Follow.send(:generate_forward_key, followable)
+  def forward_key(creepable)
+    Socialization::RedisStores::Creep.send(:generate_forward_key, creepable)
   end
 
-  def backward_key(follower)
-    Socialization::RedisStores::Follow.send(:generate_backward_key, follower)
+  def backward_key(creeper)
+    Socialization::RedisStores::Creep.send(:generate_backward_key, creeper)
   end
 end

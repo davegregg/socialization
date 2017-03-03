@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Socialization::RedisStores::Follow do
+describe Socialization::RedisStores::Creep do
   before do
     use_redis_store
     @klass = Socialization::RedisStores::Mention

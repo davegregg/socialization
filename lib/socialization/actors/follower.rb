@@ -1,88 +1,88 @@
 module ActiveRecord
   class Base
-    def is_follower?
+    def is_creeper?
       false
     end
-    alias follower? is_follower?
+    alias creeper? is_creeper?
   end
 end
 
 module Socialization
-  module Follower
+  module Creeper
     extend ActiveSupport::Concern
 
     included do
-      after_destroy { Socialization.follow_model.remove_followables(self) }
+      after_destroy { Socialization.creep_model.remove_creepables(self) }
 
-      # Specifies if self can follow {Followable} objects.
+      # Specifies if self can creep {Creepable} objects.
       #
       # @return [Boolean]
-      def is_follower?
+      def is_creeper?
         true
       end
-      alias follower? is_follower?
+      alias creeper? is_creeper?
 
-      # Create a new {Follow follow} relationship.
+      # Create a new {Creep creep} relationship.
       #
-      # @param [Followable] followable the object to be followed.
+      # @param [Creepable] creepable the object to be creeped.
       # @return [Boolean]
-      def follow!(followable)
-        raise Socialization::ArgumentError, "#{followable} is not followable!"  unless followable.respond_to?(:is_followable?) && followable.is_followable?
-        Socialization.follow_model.follow!(self, followable)
+      def creep!(creepable)
+        raise Socialization::ArgumentError, "#{creepable} is not creepable!"  unless creepable.respond_to?(:is_creepable?) && creepable.is_creepable?
+        Socialization.creep_model.creep!(self, creepable)
       end
 
-      # Delete a {Follow follow} relationship.
+      # Delete a {Creep creep} relationship.
       #
-      # @param [Followable] followable the object to unfollow.
+      # @param [Creepable] creepable the object to uncreep.
       # @return [Boolean]
-      def unfollow!(followable)
-        raise Socialization::ArgumentError, "#{followable} is not followable!" unless followable.respond_to?(:is_followable?) && followable.is_followable?
-        Socialization.follow_model.unfollow!(self, followable)
+      def uncreep!(creepable)
+        raise Socialization::ArgumentError, "#{creepable} is not creepable!" unless creepable.respond_to?(:is_creepable?) && creepable.is_creepable?
+        Socialization.creep_model.uncreep!(self, creepable)
       end
 
-      # Toggles a {Follow follow} relationship.
+      # Toggles a {Creep creep} relationship.
       #
-      # @param [Followable] followable the object to follow/unfollow.
+      # @param [Creepable] creepable the object to creep/uncreep.
       # @return [Boolean]
-      def toggle_follow!(followable)
-        raise Socialization::ArgumentError, "#{followable} is not followable!" unless followable.respond_to?(:is_followable?) && followable.is_followable?
-        if follows?(followable)
-          unfollow!(followable)
+      def toggle_creep!(creepable)
+        raise Socialization::ArgumentError, "#{creepable} is not creepable!" unless creepable.respond_to?(:is_creepable?) && creepable.is_creepable?
+        if creeps?(creepable)
+          uncreep!(creepable)
           false
         else
-          follow!(followable)
+          creep!(creepable)
           true
         end
       end
 
-      # Specifies if self follows a {Followable} object.
+      # Specifies if self creeps a {Creepable} object.
       #
-      # @param [Followable] followable the {Followable} object to test against.
+      # @param [Creepable] creepable the {Creepable} object to test against.
       # @return [Boolean]
-      def follows?(followable)
-        raise Socialization::ArgumentError, "#{followable} is not followable!" unless followable.respond_to?(:is_followable?) && followable.is_followable?
-        Socialization.follow_model.follows?(self, followable)
+      def creeps?(creepable)
+        raise Socialization::ArgumentError, "#{creepable} is not creepable!" unless creepable.respond_to?(:is_creepable?) && creepable.is_creepable?
+        Socialization.creep_model.creeps?(self, creepable)
       end
 
-      # Returns all the followables of a certain type that are followed by self
+      # Returns all the creepables of a certain type that are creeped by self
       #
-      # @params [Followable] klass the type of {Followable} you want
+      # @params [Creepable] klass the type of {Creepable} you want
       # @params [Hash] opts a hash of options
-      # @return [Array<Followable, Numeric>] An array of Followable objects or IDs
-      def followables(klass, opts = {})
-        Socialization.follow_model.followables(self, klass, opts)
+      # @return [Array<Creepable, Numeric>] An array of Creepable objects or IDs
+      def creepables(klass, opts = {})
+        Socialization.creep_model.creepables(self, klass, opts)
       end
-      alias :followees :followables
+      alias :creepees :creepables
 
-      # Returns a relation for all the followables of a certain type that are followed by self
+      # Returns a relation for all the creepables of a certain type that are creeped by self
       #
-      # @params [Followable] klass the type of {Followable} you want
+      # @params [Creepable] klass the type of {Creepable} you want
       # @params [Hash] opts a hash of options
       # @return ActiveRecord::Relation
-      def followables_relation(klass, opts = {})
-        Socialization.follow_model.followables_relation(self, klass, opts)
+      def creepables_relation(klass, opts = {})
+        Socialization.creep_model.creepables_relation(self, klass, opts)
       end
-      alias :followees_relation :followables_relation
+      alias :creepees_relation :creepables_relation
     end
   end
 end

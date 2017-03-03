@@ -23,15 +23,15 @@ describe "The World" do
   shared_examples "the world" do
     it "acts like it should" do
       john.like!(pulp)
-      john.follow!(jane)
-      john.follow!(travolta)
+      john.creep!(jane)
+      john.creep!(travolta)
 
       expect(john.likes?(pulp)).to be true
-      expect(john.follows?(jane)).to be true
-      expect(john.follows?travolta).to be true
+      expect(john.creeps?(jane)).to be true
+      expect(john.creeps?travolta).to be true
 
       expect(pulp.liked_by?(john)).to be true
-      expect(travolta.followed_by?(john)).to be true
+      expect(travolta.creeped_by?(john)).to be true
 
       carl.like!(pulp)
       camilo.like!(pulp)
@@ -42,25 +42,25 @@ describe "The World" do
       expect(pulp.likers(User).include?(camilo)).to be true
       expect(!pulp.likers(User).include?(mat)).to be true
 
-      carl.follow!(mat)
-      mat.follow!(carl)
-      camilo.follow!(carl)
+      carl.creep!(mat)
+      mat.creep!(carl)
+      camilo.creep!(carl)
 
-      expect(carl.follows?(mat)).to be true
-      expect(mat.followed_by?(carl)).to be true
-      expect(mat.follows?(carl)).to be true
-      expect(carl.followed_by?(mat)).to be true
-      expect(camilo.follows?(carl)).to be true
-      expect(!carl.follows?(camilo)).to be true
+      expect(carl.creeps?(mat)).to be true
+      expect(mat.creeped_by?(carl)).to be true
+      expect(mat.creeps?(carl)).to be true
+      expect(carl.creeped_by?(mat)).to be true
+      expect(camilo.creeps?(carl)).to be true
+      expect(!carl.creeps?(camilo)).to be true
 
       # Can't like a Celeb
       expect { john.like!(travolta) }.to raise_error(Socialization::ArgumentError)
 
-      # Can't follow a movie
-      expect { john.follow!(kill_bill) }.to raise_error(Socialization::ArgumentError)
+      # Can't creep a movie
+      expect { john.creep!(kill_bill) }.to raise_error(Socialization::ArgumentError)
 
-      # You can even follow or like yourself if your ego is that big.
-      expect(john.follow!(john)).to be true
+      # You can even creep or like yourself if your ego is that big.
+      expect(john.creep!(john)).to be true
       expect(john.like!(john)).to be true
 
       comment = john.comments.create(:body => "I think Tami and Carl would like this movie!", :movie_id => pulp.id)

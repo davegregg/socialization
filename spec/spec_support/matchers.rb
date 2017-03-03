@@ -17,15 +17,15 @@ RSpec::Matchers.define :be_a_public_method_of do |obj|
   end
 end
 
-RSpec::Matchers.define :match_follower do |expected|
+RSpec::Matchers.define :match_creeper do |expected|
   match do |actual|
-    expected.follower_type == actual.class.to_s && expected.follower_id == actual.id
+    expected.creeper_type == actual.class.to_s && expected.creeper_id == actual.id
   end
 end
 
-RSpec::Matchers.define :match_followable do |expected|
+RSpec::Matchers.define :match_creepable do |expected|
   match do |actual|
-    expected.followable_type == actual.class.to_s && expected.followable_id == actual.id
+    expected.creepable_type == actual.class.to_s && expected.creepable_id == actual.id
   end
 end
 

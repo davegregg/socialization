@@ -85,14 +85,14 @@ describe Socialization::Liker do
   end
 
   describe "#likeables_relation" do
-    it "calls $Follow.likeables_relation" do
+    it "calls $Creep.likeables_relation" do
       expect($Like).to receive(:likeables_relation).with(@liker, @likeable.class, { :foo => :bar })
       @liker.likeables_relation(@likeable.class, { :foo => :bar })
     end
   end
 
   describe "#likees_relation" do
-    it "calls $Follow.likeables_relation" do
+    it "calls $Creep.likeables_relation" do
       expect($Like).to receive(:likeables_relation).with(@liker, @likeable.class, { :foo => :bar })
       @liker.likees_relation(@likeable.class, { :foo => :bar })
     end

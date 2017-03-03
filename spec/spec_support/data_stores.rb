@@ -6,21 +6,21 @@ silence_warnings do
 end
 
 def use_redis_store
-  Socialization.follow_model = Socialization::RedisStores::Follow
+  Socialization.creep_model = Socialization::RedisStores::Creep
   Socialization.mention_model = Socialization::RedisStores::Mention
   Socialization.like_model = Socialization::RedisStores::Like
   setup_model_shortcuts
 end
 
 def use_ar_store
-  Socialization.follow_model = Socialization::ActiveRecordStores::Follow
+  Socialization.creep_model = Socialization::ActiveRecordStores::Creep
   Socialization.mention_model = Socialization::ActiveRecordStores::Mention
   Socialization.like_model = Socialization::ActiveRecordStores::Like
   setup_model_shortcuts
 end
 
 def setup_model_shortcuts
-  $Follow = Socialization.follow_model
+  $Creep = Socialization.creep_model
   $Mention = Socialization.mention_model
   $Like = Socialization.like_model
 end
@@ -57,11 +57,11 @@ ActiveRecord::Schema.define(:version => 0) do
     t.string :body
   end
 
-  create_table :follows do |t|
-    t.string  :follower_type
-    t.integer :follower_id
-    t.string  :followable_type
-    t.integer :followable_id
+  create_table :creeps do |t|
+    t.string  :creeper_type
+    t.integer :creeper_id
+    t.string  :creepable_type
+    t.integer :creepable_id
     t.datetime :created_at
   end
 
@@ -81,21 +81,21 @@ ActiveRecord::Schema.define(:version => 0) do
     t.datetime :created_at
   end
 
-  create_table :im_a_followers do |t|
+  create_table :im_a_creepers do |t|
     t.timestamps null: true
   end
 
-  create_table :im_a_follower_with_counter_caches do |t|
-    t.integer :followees_count, default: 0
+  create_table :im_a_creeper_with_counter_caches do |t|
+    t.integer :creepees_count, default: 0
     t.timestamps null: true
   end
 
-  create_table :im_a_followables do |t|
+  create_table :im_a_creepables do |t|
     t.timestamps null: true
   end
 
-  create_table :im_a_followable_with_counter_caches do |t|
-    t.integer :followers_count, default: 0
+  create_table :im_a_creepable_with_counter_caches do |t|
+    t.integer :creepers_count, default: 0
     t.timestamps null: true
   end
 
@@ -145,13 +145,13 @@ ActiveRecord::Schema.define(:version => 0) do
 end
 
 class ::Celebrity < ActiveRecord::Base
-  acts_as_followable
+  acts_as_creepable
   acts_as_mentionable
 end
 
 class ::User < ActiveRecord::Base
-  acts_as_follower
-  acts_as_followable
+  acts_as_creeper
+  acts_as_creepable
   acts_as_liker
   acts_as_likeable
   acts_as_mentionable
@@ -170,25 +170,25 @@ class ::Movie < ActiveRecord::Base
   has_many :comments
 end
 
-# class Follow < Socialization::ActiveRecordStores::Follow; end
+# class Creep < Socialization::ActiveRecordStores::Creep; end
 # class Like < Socialization::ActiveRecordStores::Like; end
 # class Mention < Socialization::ActiveRecordStores::Mention; end
 
-class ::ImAFollower < ActiveRecord::Base
-  acts_as_follower
+class ::ImACreeper < ActiveRecord::Base
+  acts_as_creeper
 end
-class ::ImAFollowerWithCounterCache < ActiveRecord::Base
-  acts_as_follower
+class ::ImACreeperWithCounterCache < ActiveRecord::Base
+  acts_as_creeper
 end
-class ::ImAFollowerChild < ImAFollower; end
+class ::ImACreeperChild < ImACreeper; end
 
-class ::ImAFollowable < ActiveRecord::Base
-  acts_as_followable
+class ::ImACreepable < ActiveRecord::Base
+  acts_as_creepable
 end
-class ::ImAFollowableWithCounterCache < ActiveRecord::Base
-  acts_as_followable
+class ::ImACreepableWithCounterCache < ActiveRecord::Base
+  acts_as_creepable
 end
-class ::ImAFollowableChild < ImAFollowable; end
+class ::ImACreepableChild < ImACreepable; end
 
 class ::ImALiker < ActiveRecord::Base
   acts_as_liker

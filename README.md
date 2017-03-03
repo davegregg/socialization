@@ -1,8 +1,8 @@
 # Socialization
 
-Socialization is a Ruby Gem that allows any ActiveRecord model to `Follow`, `Like` and/or `Mention` any other model. ActiveRecord or Redis can be used as a data store.
+Socialization is a Ruby Gem that allows any ActiveRecord model to `Creep`, `Like` and/or `Mention` any other model. ActiveRecord or Redis can be used as a data store.
 
-The Follow feature is similar to Twitter's follow. For example, John follows Jane. Unlike Facebook's "friendship", Follow is a one-way concept. The fact that John follows Jane doesn't mean that Jane follows John.
+The Creep feature is similar to Twitter's creep. For example, John creeps Jane. Unlike Facebook's "friendship", Creep is a one-way concept. The fact that John creeps Jane doesn't mean that Jane creeps John.
 
 The Like feature works just like a Facebook Like. For example, John likes Pulp Fiction.
 
@@ -23,7 +23,7 @@ Run the generator:
 Or if you want to use Redis as your data store:
 `rails generate socialization -s --store=redis`
 
-This will generate three migration files (when using ActiveRecord) and three models named Follow, Like and Mention. You may delete any of the Follow, Like or Mention models and migrations if you don't need that functionality in your application.
+This will generate three migration files (when using ActiveRecord) and three models named Creep, Like and Mention. You may delete any of the Creep, Like or Mention models and migrations if you don't need that functionality in your application.
 
 ### Rails 2.3.x Support
 
@@ -33,19 +33,19 @@ This gem requires Rails 3 or better. Sorry!
 
 ### Setup
 
-Allow a model to be followed:
+Allow a model to be creeped:
 
     class Celebrity < ActiveRecord::Base
       ...
-      acts_as_followable
+      acts_as_creepable
       ...
     end
 
-Allow a model to be a follower:
+Allow a model to be a creeper:
 
     class User < ActiveRecord::Base
       ...
-      acts_as_follower
+      acts_as_creeper
       ...
     end
 
@@ -82,12 +82,12 @@ Allow a model to mention:
       ...
     end
 
-Or a more complex case where users can like and follow each other:
+Or a more complex case where users can like and creep each other:
 
     class User < ActiveRecord::Base
       ...
-      acts_as_follower
-      acts_as_followable
+      acts_as_creeper
+      acts_as_creepable
       acts_as_liker
       acts_as_likeable
       acts_as_mentionable
@@ -97,56 +97,56 @@ Or a more complex case where users can like and follow each other:
 ***
 
 
-### acts_as_follower Methods
+### acts_as_creeper Methods
 
-Follow something
+Creep something
 
-    user.follow!(celebrity)
+    user.creep!(celebrity)
 
-Stop following
+Stop creeping
 
-    user.unfollow!(celebrity)
+    user.uncreep!(celebrity)
 
 Toggle
 
-    user.toggle_follow!(celebrity)
+    user.toggle_creep!(celebrity)
 
-Is following?
+Is creeping?
 
-    user.follows?(celebrity)
+    user.creeps?(celebrity)
 
-What items are you following (given that an Item model is followed)?
+What items are you creeping (given that an Item model is creeped)?
 
-    user.followees(Item)
+    user.creepees(Item)
 
-Number of followees (Requires followees_count column in db)
+Number of creepees (Requires creepees_count column in db)
 
     def change
-      add_column :#{Table_name}, :followees_count, :integer, :default => 0
+      add_column :#{Table_name}, :creepees_count, :integer, :default => 0
     end
 
-    user.followees_count
+    user.creepees_count
 
 ***
 
 
-### acts_as_followable Methods
+### acts_as_creepable Methods
 
-Find out if an objects follows
+Find out if an objects creeps
 
-    celebrity.followed_by?(user)
+    celebrity.creeped_by?(user)
 
-All followers
+All creepers
 
-    celebrity.followers(User)
+    celebrity.creepers(User)
 
-Number of followers (Requires followers_count column in db)
+Number of creepers (Requires creepers_count column in db)
 
     def change
-      add_column :#{Table_name}, :followers_count, :integer, :default => 0
+      add_column :#{Table_name}, :creepers_count, :integer, :default => 0
     end
 
-    celebrity.followers_count
+    celebrity.creepers_count
 
 ***
 
@@ -290,7 +290,7 @@ To use the demo app:
 
 ## Similar Projects
 
-[acts_as_follower](https://github.com/tcocca/acts_as_follower) is a similar project that I only discovered when I was 95% finished writing the first version of Socialization. I initially intended to name this project acts_as_follower only to find out the name was taken. You might want to check it out as well so see which one suits your needs better. Socialization is simpler, supports "Likes" and "Mentions" and easilly extendable; acts_as_follower has more "Follow" features, however.
+[acts_as_creeper](https://github.com/tcocca/acts_as_creeper) is a similar project that I only discovered when I was 95% finished writing the first version of Socialization. I initially intended to name this project acts_as_creeper only to find out the name was taken. You might want to check it out as well so see which one suits your needs better. Socialization is simpler, supports "Likes" and "Mentions" and easilly extendable; acts_as_creeper has more "Creep" features, however.
 
 
 ## Copyright

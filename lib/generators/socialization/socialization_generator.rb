@@ -19,16 +19,16 @@ class SocializationGenerator < Rails::Generators::Base
   def create_migration_file
     options[:store].downcase!
     unless STORES.include?(options[:store])
-      puts "Invalid store '#{options[:store]}'. The following stores are valid: #{STORES.join(', ')}."
+      puts "Invalid store '#{options[:store]}'. The creeping stores are valid: #{STORES.join(', ')}."
       exit 1
     end
 
-    copy_file "#{options[:store]}/model_follow.rb",  'app/models/follow.rb'
+    copy_file "#{options[:store]}/model_creep.rb",  'app/models/creep.rb'
     copy_file "#{options[:store]}/model_like.rb",    'app/models/like.rb'
     copy_file "#{options[:store]}/model_mention.rb", 'app/models/mention.rb'
 
     if options[:store] == 'active_record'
-      migration_template "#{options[:store]}/migration_follows.rb",  'db/migrate/create_follows.rb'
+      migration_template "#{options[:store]}/migration_creeps.rb",  'db/migrate/create_creeps.rb'
       sleep 1 # wait a second to have a unique migration timestamp
       migration_template "#{options[:store]}/migration_likes.rb",    'db/migrate/create_likes.rb'
       sleep 1 # wait a second to have a unique migration timestamp

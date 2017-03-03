@@ -1,25 +1,25 @@
 require 'spec_helper'
 
-describe Socialization::RedisStores::Follow do
+describe Socialization::RedisStores::Creep do
   before do
     use_redis_store
-    @klass = Socialization::RedisStores::Follow
+    @klass = Socialization::RedisStores::Creep
     @base = Socialization::RedisStores::Base
   end
 
   describe "method aliases" do
     it "should be set properly and made public" do
-      # TODO: Can't figure out how to test method aliases properly. The following doesn't work:
-      # assert @klass.method(:follow!) == @base.method(:relation!)
-      expect(:follow!).to be_a_public_method_of(@klass)
-      expect(:unfollow!).to be_a_public_method_of(@klass)
-      expect(:follows?).to be_a_public_method_of(@klass)
-      expect(:followers_relation).to be_a_public_method_of(@klass)
-      expect(:followers).to be_a_public_method_of(@klass)
-      expect(:followables_relation).to be_a_public_method_of(@klass)
-      expect(:followables).to be_a_public_method_of(@klass)
-      expect(:remove_followers).to be_a_public_method_of(@klass)
-      expect(:remove_followables).to be_a_public_method_of(@klass)
+      # TODO: Can't figure out how to test method aliases properly. The creeping doesn't work:
+      # assert @klass.method(:creep!) == @base.method(:relation!)
+      expect(:creep!).to be_a_public_method_of(@klass)
+      expect(:uncreep!).to be_a_public_method_of(@klass)
+      expect(:creeps?).to be_a_public_method_of(@klass)
+      expect(:creepers_relation).to be_a_public_method_of(@klass)
+      expect(:creepers).to be_a_public_method_of(@klass)
+      expect(:creepables_relation).to be_a_public_method_of(@klass)
+      expect(:creepables).to be_a_public_method_of(@klass)
+      expect(:remove_creepers).to be_a_public_method_of(@klass)
+      expect(:remove_creepables).to be_a_public_method_of(@klass)
     end
   end
 

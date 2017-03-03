@@ -1,14 +1,14 @@
-class CreateFollows < ActiveRecord::Migration
+class CreateCreeps < ActiveRecord::Migration
   def change
-    create_table :follows do |t|
-      t.string  :follower_type
-      t.integer :follower_id
-      t.string  :followable_type
-      t.integer :followable_id
+    create_table :creeps do |t|
+      t.string  :creeper_type
+      t.integer :creeper_id
+      t.string  :creepable_type
+      t.integer :creepable_id
       t.datetime :created_at
     end
 
-    add_index :follows, ["follower_id", "follower_type"],     :name => "fk_follows"
-    add_index :follows, ["followable_id", "followable_type"], :name => "fk_followables"
+    add_index :creeps, ["creeper_id", "creeper_type"],     :name => "fk_creeps"
+    add_index :creeps, ["creepable_id", "creepable_type"], :name => "fk_creepables"
   end
 end

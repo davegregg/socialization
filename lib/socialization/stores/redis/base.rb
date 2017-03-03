@@ -85,8 +85,8 @@ module Socialization
 
       private
         def key_type_to_type_names(klass)
-          if klass.name.match(/Follow$/)
-            ['follower', 'followable']
+          if klass.name.match(/Creep$/)
+            ['creeper', 'creepable']
           elsif klass.name.match(/Like$/)
             ['liker', 'likeable']
           elsif klass.name.match(/Mention$/)

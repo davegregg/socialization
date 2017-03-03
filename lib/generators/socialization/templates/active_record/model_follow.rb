@@ -1,2 +1,2 @@
-class Follow < Socialization::ActiveRecordStores::Follow
+class Creep < Socialization::ActiveRecordStores::Creep
 end

@@ -24,16 +24,16 @@ ActiveRecord::Schema.define(:version => 20120221202703) do
     t.string  "body"
   end
 
-  create_table "follows", :force => true do |t|
-    t.string   "follower_type"
-    t.integer  "follower_id"
-    t.string   "followable_type"
-    t.integer  "followable_id"
+  create_table "creeps", :force => true do |t|
+    t.string   "creeper_type"
+    t.integer  "creeper_id"
+    t.string   "creepable_type"
+    t.integer  "creepable_id"
     t.datetime "created_at"
   end
 
-  add_index "follows", ["followable_id", "followable_type"], :name => "fk_followables"
-  add_index "follows", ["follower_id", "follower_type"], :name => "fk_follows"
+  add_index "creeps", ["creepable_id", "creepable_type"], :name => "fk_creepables"
+  add_index "creeps", ["creeper_id", "creeper_type"], :name => "fk_creeps"
 
   create_table "likes", :force => true do |t|
     t.string   "liker_type"

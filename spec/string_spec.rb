@@ -5,7 +5,7 @@ describe String do
     it "should return a class" do
       expect("Socialization".deep_const_get).to eq(Socialization)
       expect("Socialization::ActiveRecordStores".deep_const_get).to eq(Socialization::ActiveRecordStores)
-      expect("Socialization::ActiveRecordStores::Follow".deep_const_get).to eq(Socialization::ActiveRecordStores::Follow)
+      expect("Socialization::ActiveRecordStores::Creep".deep_const_get).to eq(Socialization::ActiveRecordStores::Creep)
 
       expect { "Foo::Bar".deep_const_get }.to raise_error(NameError)
     end

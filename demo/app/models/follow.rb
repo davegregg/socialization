@@ -1,3 +1,3 @@
-class Follow < Socialization::ActiveRecordStores::Follow
-  self.table_name = 'follows'
+class Creep < Socialization::ActiveRecordStores::Creep
+  self.table_name = 'creeps'
 end

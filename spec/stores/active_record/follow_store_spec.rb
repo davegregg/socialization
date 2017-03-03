@@ -1,146 +1,146 @@
 require 'spec_helper'
 
-describe Socialization::ActiveRecordStores::Follow do
+describe Socialization::ActiveRecordStores::Creep do
   before do
-    @klass = Socialization::ActiveRecordStores::Follow
+    @klass = Socialization::ActiveRecordStores::Creep
     @klass.touch nil
-    @klass.after_follow nil
-    @klass.after_unfollow nil
-    @follower = ImAFollower.create
-    @followable = ImAFollowable.create
+    @klass.after_creep nil
+    @klass.after_uncreep nil
+    @creeper = ImACreeper.create
+    @creepable = ImACreepable.create
   end
 
   describe "data store" do
-    it "inherits Socialization::ActiveRecordStores::Follow" do
-      expect(Socialization.follow_model).to eq(Socialization::ActiveRecordStores::Follow)
+    it "inherits Socialization::ActiveRecordStores::Creep" do
+      expect(Socialization.creep_model).to eq(Socialization::ActiveRecordStores::Creep)
     end
   end
 
-  describe "#follow!" do
-    it "creates a Follow record" do
-      @klass.follow!(@follower, @followable)
-      expect(@follower).to match_follower(@klass.last)
-      expect(@followable).to match_followable(@klass.last)
+  describe "#creep!" do
+    it "creates a Creep record" do
+      @klass.creep!(@creeper, @creepable)
+      expect(@creeper).to match_creeper(@klass.last)
+      expect(@creepable).to match_creepable(@klass.last)
     end
 
     it "increments counter caches" do
-      follower   = ImAFollowerWithCounterCache.create
-      followable = ImAFollowableWithCounterCache.create
-      @klass.follow!(follower, followable)
-      expect(follower.reload.followees_count).to eq(1)
-      expect(followable.reload.followers_count).to eq(1)
+      creeper   = ImACreeperWithCounterCache.create
+      creepable = ImACreepableWithCounterCache.create
+      @klass.creep!(creeper, creepable)
+      expect(creeper.reload.creepees_count).to eq(1)
+      expect(creepable.reload.creepers_count).to eq(1)
     end
 
-    it "touches follower when instructed" do
-      @klass.touch :follower
-      expect(@follower).to receive(:touch).once
-      expect(@followable).to receive(:touch).never
-      @klass.follow!(@follower, @followable)
+    it "touches creeper when instructed" do
+      @klass.touch :creeper
+      expect(@creeper).to receive(:touch).once
+      expect(@creepable).to receive(:touch).never
+      @klass.creep!(@creeper, @creepable)
     end
 
-    it "touches followable when instructed" do
-      @klass.touch :followable
-      expect(@follower).to receive(:touch).never
-      expect(@followable).to receive(:touch).once
-      @klass.follow!(@follower, @followable)
+    it "touches creepable when instructed" do
+      @klass.touch :creepable
+      expect(@creeper).to receive(:touch).never
+      expect(@creepable).to receive(:touch).once
+      @klass.creep!(@creeper, @creepable)
     end
 
     it "touches all when instructed" do
       @klass.touch :all
-      expect(@follower).to receive(:touch).once
-      expect(@followable).to receive(:touch).once
-      @klass.follow!(@follower, @followable)
+      expect(@creeper).to receive(:touch).once
+      expect(@creepable).to receive(:touch).once
+      @klass.creep!(@creeper, @creepable)
     end
 
-    it "calls after follow hook" do
-      @klass.after_follow :after_follow
-      expect(@klass).to receive(:after_follow).once
-      @klass.follow!(@follower, @followable)
+    it "calls after creep hook" do
+      @klass.after_creep :after_creep
+      expect(@klass).to receive(:after_creep).once
+      @klass.creep!(@creeper, @creepable)
     end
 
-    it "calls after unfollow hook" do
-      @klass.after_follow :after_unfollow
-      expect(@klass).to receive(:after_unfollow).once
-      @klass.follow!(@follower, @followable)
+    it "calls after uncreep hook" do
+      @klass.after_creep :after_uncreep
+      expect(@klass).to receive(:after_uncreep).once
+      @klass.creep!(@creeper, @creepable)
     end
   end
 
-  describe "#unfollow!" do
+  describe "#uncreep!" do
     it "decrements counter caches" do
-      follower   = ImAFollowerWithCounterCache.create
-      followable = ImAFollowableWithCounterCache.create
-      @klass.follow!(follower, followable)
-      @klass.unfollow!(follower, followable)
-      expect(follower.reload.followees_count).to eq(0)
-      expect(followable.reload.followers_count).to eq(0)
+      creeper   = ImACreeperWithCounterCache.create
+      creepable = ImACreepableWithCounterCache.create
+      @klass.creep!(creeper, creepable)
+      @klass.uncreep!(creeper, creepable)
+      expect(creeper.reload.creepees_count).to eq(0)
+      expect(creepable.reload.creepers_count).to eq(0)
     end
   end
 
-  describe "#follows?" do
-    it "returns true when follow exists" do
+  describe "#creeps?" do
+    it "returns true when creep exists" do
       @klass.create! do |f|
-        f.follower = @follower
-        f.followable = @followable
+        f.creeper = @creeper
+        f.creepable = @creepable
       end
-      expect(@klass.follows?(@follower, @followable)).to be true
+      expect(@klass.creeps?(@creeper, @creepable)).to be true
     end
 
-    it "returns false when follow doesn't exist" do
-      expect(@klass.follows?(@follower, @followable)).to be false
-    end
-  end
-
-  describe "#followers" do
-    it "returns an array of followers" do
-      follower1 = ImAFollower.create
-      follower2 = ImAFollower.create
-      follower1.follow!(@followable)
-      follower2.follow!(@followable)
-      expect(@klass.followers(@followable, follower1.class)).to eq([follower1, follower2])
-    end
-
-    it "returns an array of follower ids when plucking" do
-      follower1 = ImAFollower.create
-      follower2 = ImAFollower.create
-      follower1.follow!(@followable)
-      follower2.follow!(@followable)
-      expect(@klass.followers(@followable, follower1.class, :pluck => :id)).to eq([follower1.id, follower2.id])
+    it "returns false when creep doesn't exist" do
+      expect(@klass.creeps?(@creeper, @creepable)).to be false
     end
   end
 
-  describe "#followables" do
-    it "returns an array of followers" do
-      followable1 = ImAFollowable.create
-      followable2 = ImAFollowable.create
-      @follower.follow!(followable1)
-      @follower.follow!(followable2)
-      expect(@klass.followables(@follower, followable1.class)).to eq([followable1, followable2])
+  describe "#creepers" do
+    it "returns an array of creepers" do
+      creeper1 = ImACreeper.create
+      creeper2 = ImACreeper.create
+      creeper1.creep!(@creepable)
+      creeper2.creep!(@creepable)
+      expect(@klass.creepers(@creepable, creeper1.class)).to eq([creeper1, creeper2])
     end
 
-    it "returns an array of follower ids when plucking" do
-      followable1 = ImAFollowable.create
-      followable2 = ImAFollowable.create
-      @follower.follow!(followable1)
-      @follower.follow!(followable2)
-      expect(@klass.followables(@follower, followable1.class, :pluck => :id)).to eq([followable1.id, followable2.id])
-    end
-  end
-
-  describe "#remove_followers" do
-    it "deletes all followers relationships for a followable" do
-      @follower.follow!(@followable)
-      expect(@followable.followers(@follower.class).count).to eq(1)
-      @klass.remove_followers(@followable)
-      expect(@followable.followers(@follower.class).count).to eq(0)
+    it "returns an array of creeper ids when plucking" do
+      creeper1 = ImACreeper.create
+      creeper2 = ImACreeper.create
+      creeper1.creep!(@creepable)
+      creeper2.creep!(@creepable)
+      expect(@klass.creepers(@creepable, creeper1.class, :pluck => :id)).to eq([creeper1.id, creeper2.id])
     end
   end
 
-  describe "#remove_followables" do
-    it "deletes all followables relationships for a follower" do
-      @follower.follow!(@followable)
-      expect(@follower.followables(@followable.class).count).to eq(1)
-      @klass.remove_followables(@follower)
-      expect(@follower.followables(@followable.class).count).to eq(0)
+  describe "#creepables" do
+    it "returns an array of creepers" do
+      creepable1 = ImACreepable.create
+      creepable2 = ImACreepable.create
+      @creeper.creep!(creepable1)
+      @creeper.creep!(creepable2)
+      expect(@klass.creepables(@creeper, creepable1.class)).to eq([creepable1, creepable2])
+    end
+
+    it "returns an array of creeper ids when plucking" do
+      creepable1 = ImACreepable.create
+      creepable2 = ImACreepable.create
+      @creeper.creep!(creepable1)
+      @creeper.creep!(creepable2)
+      expect(@klass.creepables(@creeper, creepable1.class, :pluck => :id)).to eq([creepable1.id, creepable2.id])
+    end
+  end
+
+  describe "#remove_creepers" do
+    it "deletes all creepers relationships for a creepable" do
+      @creeper.creep!(@creepable)
+      expect(@creepable.creepers(@creeper.class).count).to eq(1)
+      @klass.remove_creepers(@creepable)
+      expect(@creepable.creepers(@creeper.class).count).to eq(0)
+    end
+  end
+
+  describe "#remove_creepables" do
+    it "deletes all creepables relationships for a creeper" do
+      @creeper.creep!(@creepable)
+      expect(@creeper.creepables(@creepable.class).count).to eq(1)
+      @klass.remove_creepables(@creeper)
+      expect(@creeper.creepables(@creepable.class).count).to eq(0)
     end
   end
 end

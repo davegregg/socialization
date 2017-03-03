@@ -1,112 +1,112 @@
 require 'spec_helper'
 
-describe Socialization::Follower do
+describe Socialization::Creeper do
   before(:all) do
     use_ar_store
-    @follower = ImAFollower.new
-    @followable = ImAFollowable.create
+    @creeper = ImACreeper.new
+    @creepable = ImACreepable.create
   end
 
-  describe "#is_follower?" do
+  describe "#is_creeper?" do
     it "returns true" do
-      expect(@follower.is_follower?).to be true
+      expect(@creeper.is_creeper?).to be true
     end
   end
 
-  describe "#follower?" do
+  describe "#creeper?" do
     it "returns true" do
-      expect(@follower.follower?).to be true
+      expect(@creeper.creeper?).to be true
     end
   end
 
-  describe "#follow!" do
-    it "does not accept non-followables" do
-      expect { @follower.follow!(:foo) }.to raise_error(Socialization::ArgumentError)
+  describe "#creep!" do
+    it "does not accept non-creepables" do
+      expect { @creeper.creep!(:foo) }.to raise_error(Socialization::ArgumentError)
     end
 
-    it "calls $Follow.follow!" do
-      expect($Follow).to receive(:follow!).with(@follower, @followable).once
-      @follower.follow!(@followable)
-    end
-  end
-
-  describe "#unfollow!" do
-    it "does not accept non-followables" do
-      expect { @follower.unfollow!(:foo) }.to raise_error(Socialization::ArgumentError)
-    end
-
-    it "calls $Follow.follow!" do
-      expect($Follow).to receive(:unfollow!).with(@follower, @followable).once
-      @follower.unfollow!(@followable)
+    it "calls $Creep.creep!" do
+      expect($Creep).to receive(:creep!).with(@creeper, @creepable).once
+      @creeper.creep!(@creepable)
     end
   end
 
-  describe "#toggle_follow!" do
-    it "does not accept non-followables" do
-      expect { @follower.unfollow!(:foo) }.to raise_error(Socialization::ArgumentError)
+  describe "#uncreep!" do
+    it "does not accept non-creepables" do
+      expect { @creeper.uncreep!(:foo) }.to raise_error(Socialization::ArgumentError)
     end
 
-    it "unfollows when following" do
-      expect(@follower).to receive(:follows?).with(@followable).once.and_return(true)
-      expect(@follower).to receive(:unfollow!).with(@followable).once
-      @follower.toggle_follow!(@followable)
-    end
-
-    it "follows when not following" do
-      expect(@follower).to receive(:follows?).with(@followable).once.and_return(false)
-      expect(@follower).to receive(:follow!).with(@followable).once
-      @follower.toggle_follow!(@followable)
+    it "calls $Creep.creep!" do
+      expect($Creep).to receive(:uncreep!).with(@creeper, @creepable).once
+      @creeper.uncreep!(@creepable)
     end
   end
 
-  describe "#follows?" do
-    it "does not accept non-followables" do
-      expect { @follower.unfollow!(:foo) }.to raise_error(Socialization::ArgumentError)
+  describe "#toggle_creep!" do
+    it "does not accept non-creepables" do
+      expect { @creeper.uncreep!(:foo) }.to raise_error(Socialization::ArgumentError)
     end
 
-    it "calls $Follow.follows?" do
-      expect($Follow).to receive(:follows?).with(@follower, @followable).once
-      @follower.follows?(@followable)
+    it "uncreeps when creeping" do
+      expect(@creeper).to receive(:creeps?).with(@creepable).once.and_return(true)
+      expect(@creeper).to receive(:uncreep!).with(@creepable).once
+      @creeper.toggle_creep!(@creepable)
     end
-  end
 
-  describe "#followables" do
-    it "calls $Follow.followables" do
-      expect($Follow).to receive(:followables).with(@follower, @followable.class, { :foo => :bar })
-      @follower.followables(@followable.class, { :foo => :bar })
-    end
-  end
-
-  describe "#followees" do
-    it "calls $Follow.followables" do
-      expect($Follow).to receive(:followables).with(@follower, @followable.class, { :foo => :bar })
-      @follower.followees(@followable.class, { :foo => :bar })
+    it "creeps when not creeping" do
+      expect(@creeper).to receive(:creeps?).with(@creepable).once.and_return(false)
+      expect(@creeper).to receive(:creep!).with(@creepable).once
+      @creeper.toggle_creep!(@creepable)
     end
   end
 
-  describe "#followables_relation" do
-    it "calls $Follow.followables_relation" do
-      expect($Follow).to receive(:followables_relation).with(@follower, @followable.class, { :foo => :bar })
-      @follower.followables_relation(@followable.class, { :foo => :bar })
+  describe "#creeps?" do
+    it "does not accept non-creepables" do
+      expect { @creeper.uncreep!(:foo) }.to raise_error(Socialization::ArgumentError)
+    end
+
+    it "calls $Creep.creeps?" do
+      expect($Creep).to receive(:creeps?).with(@creeper, @creepable).once
+      @creeper.creeps?(@creepable)
     end
   end
 
-  describe "#followees_relation" do
-    it "calls $Follow.followables_relation" do
-      expect($Follow).to receive(:followables_relation).with(@follower, @followable.class, { :foo => :bar })
-      @follower.followees_relation(@followable.class, { :foo => :bar })
+  describe "#creepables" do
+    it "calls $Creep.creepables" do
+      expect($Creep).to receive(:creepables).with(@creeper, @creepable.class, { :foo => :bar })
+      @creeper.creepables(@creepable.class, { :foo => :bar })
     end
   end
 
-  describe "deleting a follower" do
+  describe "#creepees" do
+    it "calls $Creep.creepables" do
+      expect($Creep).to receive(:creepables).with(@creeper, @creepable.class, { :foo => :bar })
+      @creeper.creepees(@creepable.class, { :foo => :bar })
+    end
+  end
+
+  describe "#creepables_relation" do
+    it "calls $Creep.creepables_relation" do
+      expect($Creep).to receive(:creepables_relation).with(@creeper, @creepable.class, { :foo => :bar })
+      @creeper.creepables_relation(@creepable.class, { :foo => :bar })
+    end
+  end
+
+  describe "#creepees_relation" do
+    it "calls $Creep.creepables_relation" do
+      expect($Creep).to receive(:creepables_relation).with(@creeper, @creepable.class, { :foo => :bar })
+      @creeper.creepees_relation(@creepable.class, { :foo => :bar })
+    end
+  end
+
+  describe "deleting a creeper" do
     before(:all) do
-      @follower = ImAFollower.create
-      @follower.follow!(@followable)
+      @creeper = ImACreeper.create
+      @creeper.creep!(@creepable)
     end
 
-    it "removes follow relationships" do
-      expect(Socialization.follow_model).to receive(:remove_followables).with(@follower)
-      @follower.destroy
+    it "removes creep relationships" do
+      expect(Socialization.creep_model).to receive(:remove_creepables).with(@creeper)
+      @creeper.destroy
     end
   end
 

@@ -1,49 +1,49 @@
 module ActiveRecord
   class Base
-    def is_followable?
+    def is_creepable?
       false
     end
-    alias followable? is_followable?
+    alias creepable? is_creepable?
   end
 end
 
 module Socialization
-  module Followable
+  module Creepable
     extend ActiveSupport::Concern
 
     included do
-      after_destroy { Socialization.follow_model.remove_followers(self) }
+      after_destroy { Socialization.creep_model.remove_creepers(self) }
 
-      # Specifies if self can be followed.
+      # Specifies if self can be creeped.
       #
       # @return [Boolean]
-      def is_followable?
+      def is_creepable?
         true
       end
-      alias followable? is_followable?
+      alias creepable? is_creepable?
 
-      # Specifies if self is followed by a {Follower} object.
+      # Specifies if self is creeped by a {Creeper} object.
       #
       # @return [Boolean]
-      def followed_by?(follower)
-        raise Socialization::ArgumentError, "#{follower} is not follower!"  unless follower.respond_to?(:is_follower?) && follower.is_follower?
-        Socialization.follow_model.follows?(follower, self)
+      def creeped_by?(creeper)
+        raise Socialization::ArgumentError, "#{creeper} is not creeper!"  unless creeper.respond_to?(:is_creeper?) && creeper.is_creeper?
+        Socialization.creep_model.creeps?(creeper, self)
       end
 
-      # Returns an array of {Follower}s following self.
+      # Returns an array of {Creeper}s creeping self.
       #
-      # @param [Class] klass the {Follower} class to be included. e.g. `User`
-      # @return [Array<Follower, Numeric>] An array of Follower objects or IDs
-      def followers(klass, opts = {})
-        Socialization.follow_model.followers(self, klass, opts)
+      # @param [Class] klass the {Creeper} class to be included. e.g. `User`
+      # @return [Array<Creeper, Numeric>] An array of Creeper objects or IDs
+      def creepers(klass, opts = {})
+        Socialization.creep_model.creepers(self, klass, opts)
       end
 
-      # Returns a scope of the {Follower}s following self.
+      # Returns a scope of the {Creeper}s creeping self.
       #
-      # @param [Class] klass the {Follower} class to be included in the scope. e.g. `User`
+      # @param [Class] klass the {Creeper} class to be included in the scope. e.g. `User`
       # @return ActiveRecord::Relation
-      def followers_relation(klass, opts = {})
-        Socialization.follow_model.followers_relation(self, klass, opts)
+      def creepers_relation(klass, opts = {})
+        Socialization.creep_model.creepers_relation(self, klass, opts)
       end
     end
   end
